@@ -2,22 +2,54 @@ library simple_ruler_picker;
 
 import 'package:flutter/material.dart';
 
+/// A widget that displays a ruler-like picker for selecting numeric values.
 class SimpleRulerPicker extends StatefulWidget {
+  /// The minimum value that can be selected.
   final int minValue;
+
+  /// The maximum value that can be selected.
   final int maxValue;
+
+  /// The initial value displayed when the picker is first shown. Must be between `minValue` and `maxValue`.
   final int initialValue;
+
+  /// The size of the text for the scale labels.
   final double scaleLabelSize;
+
+  /// Padding below the scale labels, creating space between the labels and the bottom of the picker.
   final double scaleBottomPadding;
+
+  /// The width of each scale item (i.e., the distance between the lines on the ruler).
   final int scaleItemWidth;
+
+  /// Callback triggered whenever the selected value changes.
   final ValueChanged<int>? onValueChanged;
+
+  /// Height of the long lines in the ruler (typically for major units).
   final double longLineHeight;
+
+  /// Height of the short lines in the ruler (typically for minor units).
   final double shortLineHeight;
+
+  /// Color of the ruler's lines (both long and short).
   final Color lineColor;
+
+  /// Color of the selected item on the ruler.
   final Color selectedColor;
+
+  /// Color of the scale labels.
   final Color labelColor;
+
+  /// The thickness (stroke width) of the ruler's lines.
   final double lineStroke;
+
+  /// The overall height of the ruler picker.
   final double height;
 
+  /// Creates a [SimpleRulerPicker] widget.
+  ///
+  /// The [minValue] must be less than or equal to [initialValue],
+  /// and [initialValue] must be less than or equal to [maxValue].
   const SimpleRulerPicker({
     super.key,
     this.minValue = 0,
