@@ -22,7 +22,7 @@ and the Flutter guide for
 
 ## Preview
 
-![demo](./demo/demo.gif)
+![demo](https://github.com/yujune/simple_ruler_picker/raw/main/demo/demo.gif)
 
 ## Getting started
 
