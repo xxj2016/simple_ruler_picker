@@ -1,5 +1,5 @@
 name: simple_ruler_picker
-description: A customizable ruler-style number picker for Flutter.
+description: A simple and customizable ruler picker widget for Flutter that enables users to pick values by scrolling through a ruler-like interface.
 version: 0.0.2
 homepage: https://github.com/yujune/simple_ruler_picker
 repository: https://github.com/yujune/simple_ruler_picker
