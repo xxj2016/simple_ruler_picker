@@ -1,3 +1,9 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+- Setup simple ruler picker.
+
+## [0.0.2] - 2024-09-13
+
+### Changed
+
+- Updated `README.md` with new demo gif.
