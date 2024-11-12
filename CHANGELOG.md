@@ -13,3 +13,9 @@
 ### Changed
 
 - Added api documentation.
+
+## [0.0.4] - 2024-11-12
+
+### Changed
+
+- Added horizontal preview.
