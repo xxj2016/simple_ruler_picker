@@ -25,3 +25,9 @@
 ### Changed
 
 - Added vertical axis picker with horizontal text orentation.
+
+## [0.1.1] - 2024-11-13
+
+### Changed
+
+- Added portrait preview in readme.
