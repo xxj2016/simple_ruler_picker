@@ -22,9 +22,9 @@ and the Flutter guide for
 
 ## Preview
 
-| Portrait                                                                      | Landscape                                                                                |
-| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| ![demo](https://github.com/yujune/simple_ruler_picker/raw/main/demo/demo.gif) | ![demo](https://github.com/yujune/simple_ruler_picker/raw/main/demo/demo_horizontal.gif) |
+| Portrait                                                                               | Landscape                                                                                |
+| -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| ![demo](https://github.com/yujune/simple_ruler_picker/raw/main/demo/demo_portrait.gif) | ![demo](https://github.com/yujune/simple_ruler_picker/raw/main/demo/demo_horizontal.gif) |
 
 ## Getting started
 
