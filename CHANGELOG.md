@@ -19,3 +19,9 @@
 ### Changed
 
 - Added horizontal preview.
+
+## [0.1.0] - 2024-11-13
+
+### Changed
+
+- Added vertical axis picker with horizontal text orentation.

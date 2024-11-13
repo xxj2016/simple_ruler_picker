@@ -34,7 +34,7 @@ Add `simple_ruler_picker` to your project's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  simple_ruler_picker: ^0.0.4
+  simple_ruler_picker: ^0.1.0
 ```
 
 Or
