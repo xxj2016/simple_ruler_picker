@@ -48,6 +48,32 @@ class ExamplePage extends StatelessWidget {
                   },
                 ),
               ),
+              PickerCard(
+                title: 'Vertical Axis Picker',
+                height: 500,
+                width: 200,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: SimpleRulerPicker(
+                    height: 400,
+                    minValue: 50,
+                    maxValue: 300,
+                    initialValue: 100,
+                    selectedColor: Colors.green,
+                    lineStroke: 3,
+                    longLineHeight: 50,
+                    shortLineHeight: 25,
+                    scaleItemWidth: 20,
+                    scaleLabelSize: 14,
+                    scaleLabelWidth: 40,
+                    axis: Axis.vertical,
+                    lineColor: Colors.grey,
+                    onValueChanged: (value) {
+                      debugPrint(value.toString());
+                    },
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -76,12 +102,14 @@ class MyApp extends StatelessWidget {
 class PickerCard extends StatelessWidget {
   final String title;
   final double height;
+  final double? width;
   final Widget child;
 
   const PickerCard({
     super.key,
     required this.title,
     required this.height,
+    this.width,
     required this.child,
   });
 
@@ -89,6 +117,7 @@ class PickerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: height,
+      width: width,
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

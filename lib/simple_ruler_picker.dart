@@ -16,6 +16,9 @@ class SimpleRulerPicker extends StatefulWidget {
   /// The size of the text for the scale labels.
   final double scaleLabelSize;
 
+  /// The width of the text for the scale labels when axis is vertical.
+  final double scaleLabelWidth;
+
   /// Padding below the scale labels, creating space between the labels and the bottom of the picker.
   final double scaleBottomPadding;
 
@@ -46,6 +49,9 @@ class SimpleRulerPicker extends StatefulWidget {
   /// The overall height of the ruler picker.
   final double height;
 
+  /// The axis along which the picker scrolls.
+  final Axis axis;
+
   /// Creates a [SimpleRulerPicker] widget.
   ///
   /// The [minValue] must be less than or equal to [initialValue],
@@ -57,6 +63,7 @@ class SimpleRulerPicker extends StatefulWidget {
     this.initialValue = 100,
     this.onValueChanged,
     this.scaleLabelSize = 14,
+    this.scaleLabelWidth = 40,
     this.scaleBottomPadding = 6,
     this.scaleItemWidth = 10,
     this.longLineHeight = 24,
@@ -66,6 +73,7 @@ class SimpleRulerPicker extends StatefulWidget {
     this.labelColor = Colors.grey,
     this.lineStroke = 2,
     this.height = 100,
+    this.axis = Axis.horizontal,
   }) : assert(
           minValue <= initialValue &&
               initialValue <= maxValue &&
@@ -80,6 +88,8 @@ class _SimpleRulerPickerState extends State<SimpleRulerPicker> {
   late ScrollController _scrollController;
   late int _selectedValue;
   bool _isPosFixed = false;
+
+  bool get _isHorizontalAxis => widget.axis == Axis.horizontal;
 
   int getScrolledItemIndex(double scrolledPixels, int itemWidth) {
     return scrolledPixels ~/ itemWidth;
@@ -154,17 +164,27 @@ class _SimpleRulerPickerState extends State<SimpleRulerPicker> {
               onNotification: onNotification,
               child: LayoutBuilder(
                 builder: (context, constraints) => ListView.builder(
-                  padding: EdgeInsets.only(
-                    left: constraints.maxWidth / 2,
-                    right: constraints.maxWidth / 2,
-                  ),
+                  padding: _isHorizontalAxis
+                      ? EdgeInsets.only(
+                          left: constraints.maxWidth / 2,
+                          right: constraints.maxWidth / 2,
+                        )
+                      : EdgeInsets.only(
+                          top: constraints.maxHeight / 2,
+                          bottom: constraints.maxHeight / 2,
+                        ),
                   controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
+                  scrollDirection: widget.axis,
                   itemCount: (widget.maxValue - widget.minValue) + 1,
                   itemBuilder: (context, index) {
                     final int value = widget.minValue + index;
                     return SizedBox(
-                      width: widget.scaleItemWidth.toDouble(),
+                      width: _isHorizontalAxis
+                          ? widget.scaleItemWidth.toDouble()
+                          : null,
+                      height: _isHorizontalAxis
+                          ? null
+                          : widget.scaleItemWidth.toDouble(),
                       child: CustomPaint(
                         painter: _RulerPainter(
                           value: value,
@@ -177,6 +197,8 @@ class _SimpleRulerPickerState extends State<SimpleRulerPicker> {
                           selectedColor: widget.selectedColor,
                           labelColor: widget.labelColor,
                           lineStroke: widget.lineStroke,
+                          axis: widget.axis,
+                          maxScaleLabelWidth: widget.scaleLabelWidth,
                         ),
                       ),
                     );
@@ -185,33 +207,116 @@ class _SimpleRulerPickerState extends State<SimpleRulerPicker> {
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _selectedValue.toString(),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: widget.selectedColor,
-                  ),
+          _isHorizontalAxis
+              ? _VerticalPointer(
+                  selectedValue: _selectedValue,
+                  selectedColor: widget.selectedColor,
+                  longLineHeight: widget.longLineHeight,
+                  scaleLabelSize: widget.scaleLabelSize,
+                  scaleBottomPadding: widget.scaleBottomPadding,
+                )
+              : _HorizontalPointer(
+                  selectedValue: _selectedValue,
+                  selectedColor: widget.selectedColor,
+                  longLineHeight: widget.longLineHeight,
+                  scaleLabelWidth: widget.scaleLabelWidth,
+                  scaleBottomPadding: widget.scaleBottomPadding,
                 ),
-                Icon(
-                  Icons.arrow_drop_down,
-                  color: widget.selectedColor,
-                  size: 24,
-                ),
-                Container(
-                  height: widget.longLineHeight,
-                  width: 2,
-                  color: widget.selectedColor,
-                ),
-                SizedBox(
-                  height: widget.scaleLabelSize + widget.scaleBottomPadding,
-                ),
-              ],
+        ],
+      ),
+    );
+  }
+}
+
+class _HorizontalPointer extends StatelessWidget {
+  const _HorizontalPointer({
+    required this.selectedValue,
+    required this.selectedColor,
+    required this.longLineHeight,
+    required this.scaleLabelWidth,
+    required this.scaleBottomPadding,
+  });
+
+  final int selectedValue;
+  final Color selectedColor;
+  final double longLineHeight;
+  final double scaleLabelWidth;
+  final double scaleBottomPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            selectedValue.toString(),
+            style: TextStyle(
+              fontSize: 12,
+              color: selectedColor,
             ),
+          ),
+          Icon(
+            Icons.arrow_right,
+            color: selectedColor,
+            size: 24,
+          ),
+          Container(
+            height: 2,
+            width: longLineHeight,
+            color: selectedColor,
+          ),
+          SizedBox(
+            width: scaleLabelWidth + scaleBottomPadding,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _VerticalPointer extends StatelessWidget {
+  const _VerticalPointer({
+    required this.selectedValue,
+    required this.selectedColor,
+    required this.longLineHeight,
+    required this.scaleLabelSize,
+    required this.scaleBottomPadding,
+  });
+
+  final int selectedValue;
+  final Color selectedColor;
+  final double longLineHeight;
+  final double scaleLabelSize;
+  final double scaleBottomPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            selectedValue.toString(),
+            style: TextStyle(
+              fontSize: 12,
+              color: selectedColor,
+            ),
+          ),
+          Icon(
+            Icons.arrow_drop_down,
+            color: selectedColor,
+            size: 24,
+          ),
+          Container(
+            height: longLineHeight,
+            width: 2,
+            color: selectedColor,
+          ),
+          SizedBox(
+            height: scaleLabelSize + scaleBottomPadding,
           ),
         ],
       ),
@@ -223,6 +328,7 @@ class _RulerPainter extends CustomPainter {
   final int value;
   final int selectedValue;
   final double scaleLabelSize;
+  final double maxScaleLabelWidth;
   final double scaleBottomPadding;
   final double longLineHeight;
   final double shortLineHeight;
@@ -230,11 +336,13 @@ class _RulerPainter extends CustomPainter {
   final Color selectedColor;
   final Color labelColor;
   final double lineStroke;
+  final Axis axis;
 
   _RulerPainter({
     required this.value,
     required this.selectedValue,
     required this.scaleLabelSize,
+    this.maxScaleLabelWidth = 40,
     required this.scaleBottomPadding,
     this.longLineHeight = 24,
     this.shortLineHeight = 12,
@@ -242,7 +350,10 @@ class _RulerPainter extends CustomPainter {
     this.selectedColor = Colors.orange,
     this.labelColor = Colors.grey,
     this.lineStroke = 2,
+    this.axis = Axis.horizontal,
   });
+
+  bool get _isHorizontalAxis => axis == Axis.horizontal;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -253,15 +364,30 @@ class _RulerPainter extends CustomPainter {
 
     // Draw scale line: Long line every 5 cm, short line every 1 cm
     final double lineHeight = value % 5 == 0 ? longLineHeight : shortLineHeight;
+
+    final p1 = _isHorizontalAxis
+        ? Offset(
+            size.width / 2,
+            size.height - scaleLabelSize - scaleBottomPadding,
+          )
+        : Offset(
+            size.width - maxScaleLabelWidth - scaleBottomPadding,
+            size.height / 2,
+          );
+
+    final p2 = _isHorizontalAxis
+        ? Offset(
+            size.width / 2,
+            size.height - lineHeight - scaleLabelSize - scaleBottomPadding,
+          )
+        : Offset(
+            size.width - lineHeight - maxScaleLabelWidth - scaleBottomPadding,
+            size.height / 2,
+          );
+
     canvas.drawLine(
-      Offset(
-        size.width / 2,
-        size.height - scaleLabelSize - scaleBottomPadding,
-      ),
-      Offset(
-        size.width / 2,
-        size.height - lineHeight - scaleLabelSize - scaleBottomPadding,
-      ),
+      p1,
+      p2,
       paint,
     );
 
@@ -279,12 +405,20 @@ class _RulerPainter extends CustomPainter {
       );
 
       textPainter.layout();
+
+      final offset = _isHorizontalAxis
+          ? Offset(
+              size.width / 2 - textPainter.width / 2,
+              size.height - scaleLabelSize,
+            )
+          : Offset(
+              size.width - maxScaleLabelWidth,
+              size.height / 2 - textPainter.height / 2,
+            );
+
       textPainter.paint(
         canvas,
-        Offset(
-          size.width / 2 - textPainter.width / 2,
-          size.height - scaleLabelSize,
-        ),
+        offset,
       );
     }
   }
