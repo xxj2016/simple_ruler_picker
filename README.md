@@ -75,6 +75,7 @@ SimpleRulerPicker(
 | `maxValue`           | `int`               | 200             | The maximum value that can be selected.                                                                | `maxValue: 100`                           |
 | `initialValue`       | `int`               | 100             | The initial value displayed when the picker is first shown. Must be between `minValue` and `maxValue`. | `initialValue: 50`                        |
 | `scaleLabelSize`     | `double`            | `14`            | The size of the text for the scale labels.                                                             | `scaleLabelSize: 16`                      |
+| `scaleLabelWidth`    | `double`            | `40`            | The width of the text for the scale labels when axis is vertical.                                      | `scaleLabelWidth: 40`                     |
 | `scaleBottomPadding` | `double`            | `6`             | Padding below the scale labels, creating space between the labels and the bottom of the picker.        | `scaleBottomPadding: 8`                   |
 | `scaleItemWidth`     | `int`               | `10`            | The width of each scale item (i.e., the distance between the lines on the ruler).                      | `scaleItemWidth: 15`                      |
 | `onValueChanged`     | `ValueChanged<int>` | null            | Callback triggered whenever the selected value changes.                                                | `onValueChanged: (value) => print(value)` |
