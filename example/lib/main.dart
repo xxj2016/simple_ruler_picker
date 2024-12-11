@@ -22,11 +22,53 @@ class ExamplePage extends StatelessWidget {
                 child: SimpleRulerPicker(
                   height: 100,
                   minValue: 0,
-                  maxValue: 250,
-                  initialValue: 180,
+                  maxValue: 100 * 10,
+                  initialValue: 18 * 10,
                   onValueChanged: (value) {
-                    debugPrint(value.toString());
+                    debugPrint((value / 10).toStringAsFixed(1));
                   },
+                  labelFormatter: (value) {
+                    double realValue = value / 10; // 转换为实际值
+                    // 如果是整数，去掉小数点
+                    if (realValue % 1 == 0) {
+                      return realValue.toInt().toString();
+                    }
+                    // 如果是小数，保留一位小数
+                    return realValue.toStringAsFixed(1);
+                  }, // 刻度标签显示
+                  showCenterValue: true, // 隐藏中心指示器的值
+                  centerValueFormatter: (value) {
+                    double realValue = value / 10; // 转换为实际值
+                    // 如果是整数，去掉小数点
+                    if (realValue % 1 == 0) {
+                      return realValue.toInt().toString();
+                    }
+                    // 如果是小数，保留一位小数
+                    return realValue.toStringAsFixed(1);
+                  }, // 中心指示器值的格式化
+                  // 自定义中心显示的 widget
+                  centerWidget: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '50', // 这里需要动态更新
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'KG',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.orange,
+                            height: 1.6,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               PickerCard(
@@ -34,9 +76,9 @@ class ExamplePage extends StatelessWidget {
                 height: 200,
                 child: SimpleRulerPicker(
                   height: 130,
-                  minValue: 50,
-                  maxValue: 300,
-                  initialValue: 100,
+                  minValue: 0,
+                  maxValue: 100 * 10,
+                  initialValue: 50 * 10,
                   selectedColor: Colors.blue,
                   lineStroke: 3,
                   longLineHeight: 50,
@@ -44,7 +86,7 @@ class ExamplePage extends StatelessWidget {
                   scaleItemWidth: 20,
                   lineColor: Colors.grey,
                   onValueChanged: (value) {
-                    debugPrint(value.toString());
+                    debugPrint(value.toStringAsFixed(1));
                   },
                 ),
               ),
