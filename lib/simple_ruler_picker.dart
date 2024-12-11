@@ -296,7 +296,7 @@ class _HorizontalPointer extends StatelessWidget {
           ),
           Container(
             height: 2,
-            width: longLineHeight + longLineHeight * 0.2,
+            width: longLineHeight,
             color: selectedColor,
           ),
           SizedBox(
