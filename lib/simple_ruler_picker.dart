@@ -52,6 +52,18 @@ class SimpleRulerPicker extends StatefulWidget {
   /// The axis along which the picker scrolls.
   final Axis axis;
 
+  /// 自定义刻度标签格式化函数
+  final String Function(int value)? labelFormatter;
+
+  /// 是否显示中心指示器的当前值
+  final bool showCenterValue;
+
+  /// 中心指示器当前值的格式化函数
+  final String Function(int value)? centerValueFormatter;
+
+  /// 自定义中心指示器的 widget
+  final Widget? centerWidget;
+
   /// Creates a [SimpleRulerPicker] widget.
   ///
   /// The [minValue] must be less than or equal to [initialValue],
@@ -74,6 +86,10 @@ class SimpleRulerPicker extends StatefulWidget {
     this.lineStroke = 2,
     this.height = 100,
     this.axis = Axis.horizontal,
+    this.labelFormatter, // 新增
+    this.showCenterValue = true, // 新增
+    this.centerValueFormatter, // 新增
+    this.centerWidget, // 新增
   }) : assert(
           minValue <= initialValue &&
               initialValue <= maxValue &&
@@ -199,6 +215,7 @@ class _SimpleRulerPickerState extends State<SimpleRulerPicker> {
                           lineStroke: widget.lineStroke,
                           axis: widget.axis,
                           maxScaleLabelWidth: widget.scaleLabelWidth,
+                          labelFormatter: widget.labelFormatter,
                         ),
                       ),
                     );
@@ -214,6 +231,9 @@ class _SimpleRulerPickerState extends State<SimpleRulerPicker> {
                   longLineHeight: widget.longLineHeight,
                   scaleLabelSize: widget.scaleLabelSize,
                   scaleBottomPadding: widget.scaleBottomPadding,
+                  showValue: widget.showCenterValue,
+                  valueFormatter: widget.centerValueFormatter,
+                  centerWidget: widget.centerWidget,
                 )
               : _HorizontalPointer(
                   selectedValue: _selectedValue,
@@ -221,6 +241,9 @@ class _SimpleRulerPickerState extends State<SimpleRulerPicker> {
                   longLineHeight: widget.longLineHeight,
                   scaleLabelWidth: widget.scaleLabelWidth,
                   scaleBottomPadding: widget.scaleBottomPadding,
+                  showValue: widget.showCenterValue,
+                  valueFormatter: widget.centerValueFormatter,
+                  centerWidget: widget.centerWidget,
                 ),
         ],
       ),
@@ -235,6 +258,9 @@ class _HorizontalPointer extends StatelessWidget {
     required this.longLineHeight,
     required this.scaleLabelWidth,
     required this.scaleBottomPadding,
+    this.showValue = true,
+    this.valueFormatter,
+    this.centerWidget,
   });
 
   final int selectedValue;
@@ -242,6 +268,9 @@ class _HorizontalPointer extends StatelessWidget {
   final double longLineHeight;
   final double scaleLabelWidth;
   final double scaleBottomPadding;
+  final bool showValue;
+  final String Function(int value)? valueFormatter;
+  final Widget? centerWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -250,13 +279,16 @@ class _HorizontalPointer extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            selectedValue.toString(),
-            style: TextStyle(
-              fontSize: 12,
-              color: selectedColor,
-            ),
-          ),
+          if (showValue)
+            centerWidget ??
+                Text(
+                  valueFormatter?.call(selectedValue) ??
+                      selectedValue.toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: selectedColor,
+                  ),
+                ),
           Icon(
             Icons.arrow_right,
             color: selectedColor,
@@ -283,6 +315,9 @@ class _VerticalPointer extends StatelessWidget {
     required this.longLineHeight,
     required this.scaleLabelSize,
     required this.scaleBottomPadding,
+    this.showValue = true,
+    this.valueFormatter,
+    this.centerWidget,
   });
 
   final int selectedValue;
@@ -290,6 +325,9 @@ class _VerticalPointer extends StatelessWidget {
   final double longLineHeight;
   final double scaleLabelSize;
   final double scaleBottomPadding;
+  final bool showValue;
+  final String Function(int value)? valueFormatter;
+  final Widget? centerWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -298,13 +336,16 @@ class _VerticalPointer extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            selectedValue.toString(),
-            style: TextStyle(
-              fontSize: 12,
-              color: selectedColor,
-            ),
-          ),
+          if (showValue)
+            centerWidget ??
+                Text(
+                  valueFormatter?.call(selectedValue) ??
+                      selectedValue.toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: selectedColor,
+                  ),
+                ),
           Icon(
             Icons.arrow_drop_down,
             color: selectedColor,
@@ -337,6 +378,7 @@ class _RulerPainter extends CustomPainter {
   final Color labelColor;
   final double lineStroke;
   final Axis axis;
+  final String Function(int value)? labelFormatter;
 
   _RulerPainter({
     required this.value,
@@ -351,6 +393,7 @@ class _RulerPainter extends CustomPainter {
     this.labelColor = Colors.grey,
     this.lineStroke = 2,
     this.axis = Axis.horizontal,
+    this.labelFormatter,
   });
 
   bool get _isHorizontalAxis => axis == Axis.horizontal;
@@ -362,8 +405,20 @@ class _RulerPainter extends CustomPainter {
       ..color = lineColor
       ..strokeWidth = lineStroke;
 
+    // 修改这里的逻辑，判断是否为整数刻度
+    // 如果你的值是10倍放大的（比如50代表5.0），那么需要判断是否能被10整除
+    final bool isIntegerScale = value % 10 == 0; // 整数刻度
+    final bool isHalfScale = value % 5 == 0; // 半数刻度
+
     // Draw scale line: Long line every 5 cm, short line every 1 cm
-    final double lineHeight = value % 5 == 0 ? longLineHeight : shortLineHeight;
+    final double lineHeight;
+    if (isIntegerScale) {
+      lineHeight = longLineHeight; // 整数刻度用最长线
+    } else if (isHalfScale) {
+      lineHeight = longLineHeight * 0.7; // 半数刻度用中等长度
+    } else {
+      lineHeight = shortLineHeight; // 其他刻度用最短线
+    }
 
     final p1 = _isHorizontalAxis
         ? Offset(
@@ -392,10 +447,11 @@ class _RulerPainter extends CustomPainter {
     );
 
     // Draw height text for every 10 cm, below the scale line
-    if (value % 10 == 0) {
+    if (isIntegerScale) {
+      final String label = labelFormatter?.call(value) ?? value.toString();
       final TextPainter textPainter = TextPainter(
         text: TextSpan(
-          text: '$value',
+          text: label,
           style: TextStyle(
             color: value == selectedValue ? selectedColor : labelColor,
             fontSize: scaleLabelSize,
