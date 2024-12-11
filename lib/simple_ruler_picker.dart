@@ -296,7 +296,7 @@ class _HorizontalPointer extends StatelessWidget {
           ),
           Container(
             height: 2,
-            width: longLineHeight,
+            width: longLineHeight + longLineHeight * 0.2,
             color: selectedColor,
           ),
           SizedBox(
@@ -346,15 +346,30 @@ class _VerticalPointer extends StatelessWidget {
                     color: selectedColor,
                   ),
                 ),
-          Icon(
-            Icons.arrow_drop_down,
-            color: selectedColor,
-            size: 24,
-          ),
-          Container(
-            height: longLineHeight,
-            width: 2,
-            color: selectedColor,
+          SizedBox(
+            height: longLineHeight + 22, // 总高度 = 线的长度 + 箭头的高度
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  Icons.arrow_drop_down,
+                  color: selectedColor,
+                  size: 24,
+                ),
+                Positioned(
+                  top: 16, // 调整这个值来改变箭头和线的连接位置
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                      height: longLineHeight + longLineHeight * 0.3,
+                      width: 3,
+                      color: selectedColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           SizedBox(
             height: scaleLabelSize + scaleBottomPadding,
